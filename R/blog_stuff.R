@@ -17,7 +17,7 @@
 sys_open <- function (f){
   if (missing(f))
     stop("No file to open!")
-  f <- path.expand(f)
+  f <- paste(getwd(), f, sep = "/")
   if (!file.exists(f))
     stop("File not found!")
   if (grepl("w|W", .Platform$OS.type)) {
