@@ -17,7 +17,7 @@
 sys_open <- function (f){
   if (missing(f))
     stop("No file to open!")
-  f <- paste(getwd(), f, sep = "/")
+  f <- file.path(getwd(), f)
   if (!file.exists(f))
     stop("File not found!")
   if (grepl("w|W", .Platform$OS.type)) {
@@ -95,8 +95,9 @@ filenameise <- filenamise
 #'   using \code{\link{sys_open}}. }
 #'
 #' @export
-new_post <- function(title = "new post", serve = TRUE, dir = "_source",
-                     subdir = TRUE, skeleton_file = ".skeleton_post"){
+new_post <- function(
+  title = "new post", serve = TRUE, dir = "_source",
+  subdir = FALSE, r_file= FALSE, skeleton_file = ".skeleton_post"){
 
   if(!dir.exists(dir)){
     stop("The directory '", dir, "' doesn't exist. Are you running R in
@@ -128,12 +129,14 @@ new_post <- function(title = "new post", serve = TRUE, dir = "_source",
   writeLines(post, rmd_name)
 
   # Write out an empty R file as well, in case that's useful
-  writeLines(
-    c("# This R file accomanies the .Rmd blog post", paste("#", rmd_name), ""),
-    r_name
-  )
+  if(r_file){
+    writeLines(
+      c("# This R file accomanies the .Rmd blog post", paste("#", rmd_name), ""),
+      r_name
+    )
+	sys_open(r_name)
+  }
 
-  sys_open(r_name)
   sys_open(rmd_name)
 
   if(serve)
